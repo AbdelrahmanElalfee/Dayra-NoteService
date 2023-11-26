@@ -2,14 +2,12 @@
 
 namespace App\Http\Requests;
 
-use App\Traits\Responses;
+use App\Exceptions\GeneralException;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpFoundation\Response;
 
 class StoreNoteRequest extends FormRequest
 {
-
-    use Responses;
 
     public function rules(): array
     {
@@ -19,10 +17,11 @@ class StoreNoteRequest extends FormRequest
         ];
     }
 
-    public function failedValidation($validator)
+    /**
+     * @throws GeneralException
+     */
+    public function failure($validator)
     {
-        $response= $this->failure($validator->errors()->first(),422);
-
-        throw (new ValidationException($validator, $response))->status(422);
+        throw (new GeneralException($validator->errors()->first(),Response::HTTP_UNPROCESSABLE_ENTITY));
     }
 }
