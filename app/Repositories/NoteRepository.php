@@ -21,11 +21,7 @@ class NoteRepository extends Repository {
     {
         try {
             \DB::beginTransaction();
-            $model = Note::create([
-                'title' => data_get($attributes, 'title'),
-                'content' => data_get($attributes, 'content'),
-                'user_id' => data_get($attributes, 'user_id'),
-            ]);
+            $model = Note::create($attributes);
             \DB::commit();
             return $model;
         } catch (\Exception $e) {
@@ -42,11 +38,7 @@ class NoteRepository extends Repository {
     {
         try {
             \DB::beginTransaction();
-            $model->update([
-                'title' => data_get($attributes, 'title'),
-                'content' => data_get($attributes, 'content'),
-                'user_id' => data_get($attributes, 'user_id'),
-            ]);
+            $model->update($attributes);
             \DB::commit();
             return $model;
         } catch (\Exception $e) {
