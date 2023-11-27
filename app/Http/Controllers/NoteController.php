@@ -17,13 +17,6 @@ class NoteController extends Controller
 {
     use Responses;
 
-    protected $repository;
-
-    public function __construct(NoteRepository $repository)
-    {
-        $this->$repository = $repository;
-    }
-
     public function index(): JsonResponse
     {
         return $this->success(NoteResource::collection(Note::all()), "Retrieved");
@@ -38,9 +31,9 @@ class NoteController extends Controller
     /**
      * @throws Throwable
      */
-    public function store(StoreNoteRequest $request): JsonResponse
+    public function store(StoreNoteRequest $request, NoteRepository $repository): JsonResponse
     {
-        $created = $this->repository->create($request->all());
+        $created = $repository->create($request->all());
         return $this->success(new NoteResource($created), 'Created', Response::HTTP_CREATED);
     }
 
@@ -49,9 +42,9 @@ class NoteController extends Controller
      * @throws Throwable
      * @throws GeneralException
      */
-    public function update(UpdateNoteRequest $request, Note $note): JsonResponse
+    public function update(UpdateNoteRequest $request, Note $note, NoteRepository $repository): JsonResponse
     {
-        $updated = $this->repository->update($note, $request->all());
+        $updated = $repository->update($note, $request->all());
         return $this->success(new NoteResource($updated), 'Updated');
     }
 
@@ -60,9 +53,9 @@ class NoteController extends Controller
      * @throws Throwable
      * @throws GeneralException
      */
-    public function destroy(Note $note): JsonResponse
+    public function destroy(Note $note, NoteRepository $repository): JsonResponse
     {
-        $deleted = $this->repository->destroy($note);
+        $deleted = $repository->destroy($note);
         return $this->success(null, '', Response::HTTP_NO_CONTENT);
     }
 }
