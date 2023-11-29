@@ -11,15 +11,14 @@ use App\Exceptions\GeneralException;
 use App\Repositories\NoteRepository;
 use App\Http\Requests\StoreNoteRequest;
 use App\Http\Requests\UpdateNoteRequest;
-use Symfony\Component\HttpFoundation\Response;
 
 class NoteController extends Controller
 {
     use Responses;
 
-    public function index(): JsonResponse
+    public function index(NoteRepository $repository): JsonResponse
     {
-        return $this->success(NoteResource::collection(Note::all()), "Retrieved");
+        return $repository->index();
     }
 
     public function show(Note $note): JsonResponse
@@ -27,13 +26,12 @@ class NoteController extends Controller
         return $this->success(new NoteResource($note), "Retrieved");
     }
 
-
     /**
      * @throws Throwable
      */
     public function store(StoreNoteRequest $request, NoteRepository $repository): JsonResponse
     {
-        return $repository->create($request->all());
+        return $repository->create($request);
     }
 
 
@@ -43,7 +41,7 @@ class NoteController extends Controller
      */
     public function update(UpdateNoteRequest $request, Note $note, NoteRepository $repository): JsonResponse
     {
-        return $repository->update($note, $request->all());
+        return $repository->update($note, $request);
     }
 
 
