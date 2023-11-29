@@ -33,8 +33,7 @@ class NoteController extends Controller
      */
     public function store(StoreNoteRequest $request, NoteRepository $repository): JsonResponse
     {
-        $created = $repository->create($request->all());
-        return $this->success(new NoteResource($created), 'Created', Response::HTTP_CREATED);
+        return $repository->create($request->all());
     }
 
 
@@ -44,8 +43,7 @@ class NoteController extends Controller
      */
     public function update(UpdateNoteRequest $request, Note $note, NoteRepository $repository): JsonResponse
     {
-        $updated = $repository->update($note, $request->all());
-        return $this->success(new NoteResource($updated), 'Updated');
+        return $repository->update($note, $request->all());
     }
 
 
@@ -55,7 +53,6 @@ class NoteController extends Controller
      */
     public function destroy(Note $note, NoteRepository $repository): JsonResponse
     {
-        $deleted = $repository->destroy($note);
-        return $this->success(null, '', Response::HTTP_NO_CONTENT);
+        return $repository->destroy($note);
     }
 }

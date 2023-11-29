@@ -3,9 +3,12 @@
 namespace App\Repositories;
 
 use App\Exceptions\GeneralException;
+use App\Http\Resources\NoteResource;
 use App\Models\Note;
 use App\Traits\Responses;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
 class NoteRepository implements NoteRepositoryInterface {
@@ -16,7 +19,7 @@ class NoteRepository implements NoteRepositoryInterface {
      * @throws Throwable
      * @throws GeneralException
      */
-    public function create(array $attributes): Note
+    public function create(array $attributes): JsonResponse
     {
         return DB::transaction(function () use ($attributes) {
             $created = Note::query()->create([
@@ -26,7 +29,7 @@ class NoteRepository implements NoteRepositoryInterface {
             ]);
 
             throw_if(!$created, GeneralException::class, 'Failed to create');
-            return $created;
+            return $this->success(new NoteResource($created), 'Created', Response::HTTP_CREATED);
         });
     }
 
@@ -34,7 +37,7 @@ class NoteRepository implements NoteRepositoryInterface {
      * @throws Throwable
      * @throws GeneralException
      */
-    public function update($model, array $attributes): Note
+    public function update($model, array $attributes): JsonResponse
     {
         try {
             \DB::beginTransaction();
@@ -44,7 +47,7 @@ class NoteRepository implements NoteRepositoryInterface {
                 'user_id' => $attributes['user_id'] ?? $model->user_id
             ]);
             \DB::commit();
-            return $model;
+            return $this->success(new NoteResource($model), 'Updated');
         } catch (\Exception $e) {
             \DB::rollBack();
             throw new GeneralException($e->getMessage(), $e->getCode());
@@ -55,12 +58,13 @@ class NoteRepository implements NoteRepositoryInterface {
      * @throws Throwable
      * @throws GeneralException
      */
-    public function destroy($model): void
+    public function destroy($model): JsonResponse
     {
         try {
             \DB::beginTransaction();
             $model->delete();
             \DB::commit();
+            $this->success(null, '', Response::HTTP_NO_CONTENT);
         } catch (\Exception $e) {
             \DB::rollBack();
             throw new GeneralException($e->getMessage(), $e->getCode());
