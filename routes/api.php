@@ -21,5 +21,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::apiResource('note', \App\Http\Controllers\NoteController::class)
     ->middleware([
         'cors',
-        'json.response'
+        'json.response',
+        'jwt.verify'
     ]);
